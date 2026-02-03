@@ -13593,10 +13593,10 @@ buffer.</p></section><section class="print-page" id="xtrabackup-option-reference
 </li>
 </ul>
 <p>When you intend to run xtrabackup in any of these modes, use the following syntax:</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span><span class="o">[</span>--defaults-file<span class="o">=</span><span class="c1">#] --backup|--prepare|--copy-back|--stats [OPTIONS]</span>
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span><span class="o">[</span>--defaults-file<span class="o">=</span><span class="c1">#] --backup|--prepare|--copy-back|--stats [OPTIONS]</span>
 </code></pre></div>
 <p>For example, the <code>--prepare</code> mode is applied as follows:</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--prepare<span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/mysql/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--prepare<span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/mysql/
 </code></pre></div>
 <p>For all modes, the default options are read from the xtrabackup and
 mysqld configuration groups from the following files in the given order:</p>
@@ -13672,12 +13672,10 @@ but is missing and may be necessary for another XtraBackup operation,
 the operation is not aborted, and prints a warning.</p>
 <details class="example">
 <summary>Example output</summary>
-<div class="highlight"><pre><span></span><code>```{.text .no-copy}
-xtrabackup: Error: missing required privilege LOCK TABLES on *.*
-xtrabackup: Warning: missing required privilege REPLICATION CLIENT on *.*
-```
-</code></pre></div>
 </details>
+<div class="highlight"><pre><span></span><code>xtrabackup: Error: missing required privilege LOCK TABLES on *.*
+xtrabackup: Warning: missing required privilege REPLICATION CLIENT on *.*
+</code></pre></div>
 <h3 id="xtrabackup-option-reference-close-files">close-files<a class="headerlink" href="#xtrabackup-option-reference-close-files" title="Permanent link">&para;</a></h3>
 <p>Usage: <code>--close-files</code></p>
 <p>Do not keep files opened. When xtrabackup opens a tablespace, xtrabackup normally
@@ -13836,7 +13834,7 @@ takes some time to complete and is done in the background) at the
 beginning of a backup provided the status variable
 <code>innodb_buffer_pool_dump_status</code> reports that the dump has been
 completed.</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--dump-innodb-buffer-pool<span class="w"> </span>--target-dir<span class="o">=</span>/home/user/backup
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--dump-innodb-buffer-pool<span class="w"> </span>--target-dir<span class="o">=</span>/home/user/backup
 </code></pre></div>
 <p>By default, this option is set to OFF.</p>
 <p>If <code>innodb_buffer_pool_dump_status</code> reports that there is running
@@ -13894,9 +13892,9 @@ xtrabackup child process.</p>
 <p>This option is in <a href="#glossary-tech-preview">tech preview</a>. Before using this option in production, we recommend that you test restoring production from physical backups in your environment, and also use the alternative backup method for redundancy.</p>
 <p>Implemented in Percona XtraBackup 8.0.32-26, the option lets you enable or disable the <a href="#smart-memory-estimation">Smart memory estimation</a> feature. The default value is OFF. Enable the feature by setting <code>--estimate-memory=ON</code> in the backup phase and setting the <code>--use-free-memory-pct</code> option in the <code>--prepare</code> phase. If the <code>--estimate-memory</code> setting is disabled, the <code>--use-free-memory-pct</code> setting is ignored.</p>
 <p>An example of how to enable the Smart memory estimation feature:</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--estimate-memory<span class="o">=</span>ON<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--estimate-memory<span class="o">=</span>ON<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--prepare<span class="w"> </span>--use-free-memory-pct<span class="o">=</span><span class="m">50</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--prepare<span class="w"> </span>--use-free-memory-pct<span class="o">=</span><span class="m">50</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
 <h3 id="xtrabackup-option-reference-export">export<a class="headerlink" href="#xtrabackup-option-reference-export" title="Permanent link">&para;</a></h3>
 <p>Usage: <code>--export</code></p>
@@ -14362,15 +14360,15 @@ backup. Note that this option has a higher priority than
 <h3 id="xtrabackup-option-reference-backing-up-selected-tables-together-with-whole-system-databases">Backing up selected tables together with whole system databases<a class="headerlink" href="#xtrabackup-option-reference-backing-up-selected-tables-together-with-whole-system-databases" title="Permanent link">&para;</a></h3>
 <p>When you need to back up specific tables from user databases along with entire system databases (such as <code>mysql</code>, <code>performance_schema</code>, or <code>sys</code>), you must use the <code>--tables</code> option with a regular expression. This is the only way to combine specific table selection with full-database inclusion, because <code>--tables</code> and <code>--databases</code> are mutually exclusive.</p>
 <p>Example 1: Back up specific tables plus entire mysql database</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables<span class="o">=</span><span class="s1">&#39;^(mydb\.(t1|t2)|mysql\.)&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables<span class="o">=</span><span class="s1">&#39;^(mydb\.(t1|t2)|mysql\.)&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/
 </code></pre></div>
 <p>This command backs up tables <code>t1</code> and <code>t2</code> from <code>mydb</code>, plus all tables in the <code>mysql</code> database.</p>
 <p>Example 2: Back up tables from multiple databases plus system databases</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables<span class="o">=</span><span class="s1">&#39;^(db1\.t1|db2\.t.*|mysql\.|performance_schema\.|sys\.)&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables<span class="o">=</span><span class="s1">&#39;^(db1\.t1|db2\.t.*|mysql\.|performance_schema\.|sys\.)&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/
 </code></pre></div>
 <p>This command backs up <code>t1</code> from <code>db1</code>, all tables starting with <code>t</code> from <code>db2</code>, plus the entire <code>mysql</code>, <code>performance_schema</code>, and <code>sys</code> databases.</p>
 <p>Example 3: Back up all tables from a database plus specific tables from another</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables<span class="o">=</span><span class="s1">&#39;^(mydb\.|otherdb\.(important_table|critical_table))&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables<span class="o">=</span><span class="s1">&#39;^(mydb\.|otherdb\.(important_table|critical_table))&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backup/
 </code></pre></div>
 <p>This command backs up all tables from <code>mydb</code> plus specific tables from <code>otherdb</code>.</p>
 <h3 id="xtrabackup-option-reference-common-pitfalls">Common pitfalls<a class="headerlink" href="#xtrabackup-option-reference-common-pitfalls" title="Permanent link">&para;</a></h3>
@@ -14455,9 +14453,9 @@ specified for the <code>--prepare</code> command.</p>
 <p>Implemented in Percona XtraBackup 8.0.30-23, this option lets you configure the <a href="#smart-memory-estimation">Smart memory estimation</a> feature. The option controls the amount of free memory that can be used to <code>--prepare</code> a backup. The default value is 0 (zero) which defines the option as disabled. For example, if you set <code>--use-free-memory-pct=50</code>, then 50% of the free memory is used to <code>prepare</code> a backup. The maximum allowed value is 100. </p>
 <p>This option works, only if <code>--estimate-memory</code> option is enabled. If the <code>--estimate-memory</code> option is disabled, the <code>--use-free-memory-pct</code> setting is ignored.</p>
 <p>An example of how to enable the Smart memory estimation feature:</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--estimate-memory<span class="o">=</span>ON<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--estimate-memory<span class="o">=</span>ON<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--prepare<span class="w"> </span>--use-free-memory-pct<span class="o">=</span><span class="m">50</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--prepare<span class="w"> </span>--use-free-memory-pct<span class="o">=</span><span class="m">50</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
 <h3 id="xtrabackup-option-reference-use-memory">use-memory<a class="headerlink" href="#xtrabackup-option-reference-use-memory" title="Permanent link">&para;</a></h3>
 <p>Usage: <code>--use-memory</code></p>
@@ -18040,27 +18038,27 @@ named <code>test</code> which contains tables named <code>t1</code> and <code>t2
 <p>Use the <code>--databases-file</code> option to list the databases or specific tables in a file</p>
 </li>
 </ul>
-<div class="admonition warning">
+<div class="admonition note">
 <p class="admonition-title">Conflict between &ndash;tables and &ndash;databases</p>
 <p>The <code>--tables</code> and <code>--databases</code> options use different filtering mechanisms and can conflict when used together.</p>
 <ul>
 <li><code>--tables</code> uses regular expressions and implies a partial backup.</li>
 <li><code>--databases</code> uses exact matching and implies a full backup of the listed databases.</li>
 </ul>
-<p>If you use both, you may get unexpected results (e.g., a database listed in <code>--databases</code> might be fully backed up even if you only wanted specific tables from it via <code>--tables</code>). To combine specific tables from one database with full backups of other databases, use <code>--tables-file</code> instead of <code>--tables</code>.</p>
+<p>If you use both, you may get unexpected results (for example, a database listed in <code>--databases</code> might be fully backed up even if you only wanted specific tables from it via <code>--tables</code>). To combine specific tables from one database with full backups of other databases, use <code>--tables-file</code> instead of <code>--tables</code>.</p>
 </div>
 <h2 id="create-partial-backup-filtering-behavior-with-examples">Filtering Behavior with Examples<a class="headerlink" href="#create-partial-backup-filtering-behavior-with-examples" title="Permanent link">&para;</a></h2>
 <p>To understand how filtering works, consider the following environment:</p>
 <ul>
-<li><strong>Database <code>test1</code></strong>: Contains tables <code>Persons1</code>, <code>Persons2</code>, and <code>Truc</code>.</li>
-<li><strong>System Databases</strong>: <code>mysql</code>, <code>performance_schema</code>, <code>sys</code>.</li>
+<li>Database <code>testdb</code>: Contains tables <code>table1</code>, <code>table2</code>, and <code>table3</code>.</li>
+<li>System Databases: <code>mysql</code>, <code>performance_schema</code>, <code>sys</code>.</li>
 </ul>
-<p><strong>Goal</strong>: Back up <code>test1.Persons1</code>, <code>test1.Persons2</code>, and all system databases (<code>mysql</code>, <code>performance_schema</code>, <code>sys</code>).</p>
+<p><strong>Goal</strong>: Back up <code>testdb.table1</code>, <code>testdb.table2</code>, and all system databases (<code>mysql</code>, <code>performance_schema</code>, <code>sys</code>).</p>
 <h3 id="create-partial-backup-why-mixing-tables-and-databases-fails">Why mixing &ndash;tables and &ndash;databases fails<a class="headerlink" href="#create-partial-backup-why-mixing-tables-and-databases-fails" title="Permanent link">&para;</a></h3>
 <p>When determining whether to back up a table, xtrabackup follows this logic:</p>
 <ol>
 <li>
-<p><strong>Database Check</strong>: It first checks if the database is included or excluded.</p>
+<p><strong>Database Check</strong>: xtrabackup first checks if the database is included or excluded.</p>
 <ul>
 <li>If you use <code>--databases</code>, any database <em>not</em> in the list is skipped immediately.</li>
 <li>If a database is in the <code>--databases</code> list, it is marked to have <strong>all its tables included</strong> (unless <code>--tables-file</code> is also used).</li>
@@ -18074,46 +18072,46 @@ named <code>test</code> which contains tables named <code>t1</code> and <code>t2
 </ul>
 </li>
 </ol>
-<p>This explains why mixing <code>--tables</code> (regex) and <code>--databases</code> (list) often fails in the scenario above:</p>
+<p>This behavior explains why mixing <code>--tables</code> (regex) and <code>--databases</code> (list) often fails in the scenario above:</p>
 <ul>
-<li><strong>Case 1</strong>: <code>xtrabackup --backup --tables="test1.Persons1" --databases="mysql"</code><ul>
-<li><code>test1</code> is NOT in <code>--databases</code>, so the database is skipped entirely. Result: No <code>test1</code> tables.</li>
+<li><strong>Case 1</strong>: <code>xtrabackup --backup --tables="testdb.table1" --databases="mysql"</code><ul>
+<li><code>testdb</code> is NOT in <code>--databases</code>, so the database is skipped entirely. The result is that no tables from the <code>testdb</code> database are included.</li>
 </ul>
 </li>
-<li><strong>Case 2</strong>: <code>xtrabackup --backup --tables="test1.Persons1" --databases="mysql,test1"</code><ul>
-<li><code>test1</code> IS in <code>--databases</code>. XtraBackup includes <strong>all</strong> tables in <code>test1</code> (<code>Persons1</code>, <code>Persons2</code>, AND <code>Truc</code>), ignoring the <code>--tables</code> regex.</li>
+<li><strong>Case 2</strong>: <code>xtrabackup --backup --tables="testdb.table1" --databases="mysql,testdb"</code><ul>
+<li><code>testdb</code> IS in <code>--databases</code>. XtraBackup includes <strong>all</strong> tables in <code>testdb</code> (<code>table1</code>, <code>table2</code>, AND <code>table3</code>), ignoring the <code>--tables</code> regex.</li>
 </ul>
 </li>
 </ul>
 <h3 id="create-partial-backup-solution-combining-specific-tables-and-whole-databases">Solution: Combining specific tables and whole databases<a class="headerlink" href="#create-partial-backup-solution-combining-specific-tables-and-whole-databases" title="Permanent link">&para;</a></h3>
-<p>If you want to back up specific tables from one database (e.g., <code>test1.Persons1</code>, <code>test1.Persons2</code>) while also backing up other databases entirely (e.g., <code>mysql</code>, <code>performance_schema</code>, <code>sys</code>), use <code>--tables-file</code> or simply list the tables in <code>--databases</code> (or <code>--databases-file</code>).</p>
+<p>If you want to back up specific tables from one database (e.g., <code>testdb.table1</code>, <code>testdb.table2</code>) while also backing up other databases (e.g., <code>mysql</code>, <code>performance_schema</code>, <code>sys</code>), use <code>--tables-file</code> or simply list the tables in <code>--databases</code> (or <code>--databases-file</code>).</p>
 <h4 id="create-partial-backup-method-1-using-tables-file-recommended">Method 1: Using <code>--tables-file</code> (Recommended)<a class="headerlink" href="#create-partial-backup-method-1-using-tables-file-recommended" title="Permanent link">&para;</a></h4>
 <ol>
 <li>
-<p>Create a file listing the specific tables you want to back up:</p>
-<div class="highlight"><pre><span></span><code>test1.Persons1
-test1.Persons2
+<p>Create a file listing the specific tables you want to back up. When using this method, you do <strong>not</strong> need to list the database of the specific tables in the <code>--databases</code> list; <code>--tables-file</code> automatically registers it.</p>
+<div class="highlight"><pre><span></span><code>testdb.table1
+testdb.table2
 </code></pre></div>
 </li>
 <li>
-<p>Run xtrabackup using both <code>--tables-file</code> and <code>--databases</code>. You do <strong>not</strong> need to list the database of the specific tables (<code>test1</code>) in the <code>--databases</code> list; <code>--tables-file</code> automatically registers it.</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables-file<span class="o">=</span>tables.txt<span class="w"> </span>--databases<span class="o">=</span><span class="s2">&quot;mysql,performance_schema,sys&quot;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<p>Run xtrabackup using both <code>--tables-file</code> and <code>--databases</code>.</p>
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables-file<span class="o">=</span>tables.txt<span class="w"> </span>--databases<span class="o">=</span><span class="s2">&quot;mysql,performance_schema,sys&quot;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
 </li>
 </ol>
-<p>In this configuration, <code>--tables-file</code> ensures the specific tables from <code>test1</code> are backed up, while <code>--databases</code> ensures the system databases are backed up in full.</p>
-<div class="admonition warning">
+<p>In this configuration, <code>--tables-file</code> ensures the specific tables from <code>testdb</code> are backed up, while <code>--databases</code> ensures the system databases are backed up in full.</p>
+<div class="admonition note">
 <p class="admonition-title">Avoid Duplication</p>
-<p>If you use <code>--tables-file</code> to back up specific tables from a database (e.g., <code>test1</code>), do <strong>not</strong> also list that database (<code>test1</code>) in the <code>--databases</code> option. Doing so will override the partial selection and back up the <strong>entire</strong> database.</p>
+<p>If you use <code>--tables-file</code> to back up specific tables from a database (e.g., <code>testdb</code>), do <strong>not</strong> also list that database (<code>testdb</code>) in the <code>--databases</code> option. Doing so will override the partial selection and back up the <strong>entire</strong> database.</p>
 </div>
 <h4 id="create-partial-backup-method-2-using-databases-for-everything">Method 2: Using <code>--databases</code> for everything<a class="headerlink" href="#create-partial-backup-method-2-using-databases-for-everything" title="Permanent link">&para;</a></h4>
 <p>You can also list the specific tables directly in the <code>--databases</code> option. This works because <code>--databases</code> supports <code>database.table</code> format.</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--databases<span class="o">=</span><span class="s2">&quot;mysql,performance_schema,sys,test1.Persons1,test1.Persons2&quot;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<p>This correctly instructs XtraBackup to take full backups of <code>mysql</code>, <code>performance_schema</code>, and <code>sys</code>, but only partial backups of <code>testdb</code>.</p>
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--databases<span class="o">=</span><span class="s2">&quot;mysql,performance_schema,sys,testdb.table1,testdb.table2&quot;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
-<p>This correctly instructs XtraBackup to take full backups of <code>mysql</code>, <code>performance_schema</code>, and <code>sys</code>, but only partial backups of <code>test1</code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Do Not Use Wildcards</p>
-<p>Do not add <code>.*</code> to database names (e.g., <code>test1.*</code>). This is not supported and will result in missing tables. Use the database name alone (<code>test1</code>) for full backups.</p>
+<p>Do not add <code>.*</code> to database names (e.g., <code>testdb.*</code>). This is not supported and will result in missing tables. Use the database name alone (<code>testdb</code>) for full backups.</p>
 </div>
 <h2 id="create-partial-backup-the-tables-option">The <code>–-tables</code> option<a class="headerlink" href="#create-partial-backup-the-tables-option" title="Permanent link">&para;</a></h2>
 <p>The first method involves the xtrabackup <code>--tables</code> option. This option accepts either:
@@ -18121,11 +18119,11 @@ test1.Persons2
 * A POSIX regular expression surrounded by single quotes that is matched against the fully-qualified database name and table name using the <code>databasename.tablename</code> format</p>
 <p>To back up only tables in the <code>test</code> database, use the following
 command:</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--datadir<span class="o">=</span>/var/lib/mysql<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--datadir<span class="o">=</span>/var/lib/mysql<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/<span class="w"> </span><span class="se">\</span>
 --tables<span class="o">=</span><span class="s2">&quot;^test[.].*&quot;</span>
 </code></pre></div>
 <p>To back up only the <code>test.t1</code> table, use the following command:</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--datadir<span class="o">=</span>/var/lib/mysql<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--datadir<span class="o">=</span>/var/lib/mysql<span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/<span class="w"> </span><span class="se">\</span>
 --tables<span class="o">=</span><span class="s2">&quot;^test[.]t1&quot;</span>
 </code></pre></div>
 <h2 id="create-partial-backup-the-tables-file-option">The <code>-–tables-file</code> option<a class="headerlink" href="#create-partial-backup-the-tables-file-option" title="Permanent link">&para;</a></h2>
@@ -18134,21 +18132,21 @@ names, one table name per line in the file. Only the tables named in the file
 will be backed up. Names are matched exactly, case-sensitive, with no pattern or
 regular expression matching. The table names must be fully-qualified in
 <code>databasename.tablename</code> format.</p>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;mydatabase.mytable&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/tables.txt
-$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables-file<span class="o">=</span>/tmp/tables.txt
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;mydatabase.mytable&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/tables.txt
+xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables-file<span class="o">=</span>/tmp/tables.txt
 </code></pre></div>
 <h2 id="create-partial-backup-the-databases-and-databases-file-options">The <code>--databases</code> and <code>-–databases-file</code> options<a class="headerlink" href="#create-partial-backup-the-databases-and-databases-file-options" title="Permanent link">&para;</a></h2>
 <p>The <code>--databases</code> option accepts a comma-separated list of database names or table names. </p>
 <ul>
-<li>To back up an entire database, specify just the database name (e.g., <code>mydb</code>).</li>
-<li>To back up specific tables, specify them in <code>database.table</code> format (e.g., <code>mydb.mytable</code>).</li>
+<li>To back up an entire database, specify just the database name (e.g., <code>databasename</code>).</li>
+<li>To back up specific tables, specify them in <code>database.table</code> format (e.g., <code>databasename.mytable</code>).</li>
 </ul>
-<div class="admonition warning">
+<div class="admonition note">
 <p class="admonition-title">No Wildcards or Regex</p>
 <p>The <code>--databases</code> option does <strong>not</strong> support wildcards (like <code>*</code>) or regular expressions.</p>
 <ul>
-<li>Do <strong>not</strong> use <code>mydb.*</code>. This will look for a literal table named <code>*</code>, which will fail to back up your tables.</li>
-<li>To include all tables, simply use the database name: <code>mydb</code>.</li>
+<li>Do <strong>not</strong> use <code>&lt;database&gt;.*</code>. This will look for a literal table named <code>*</code>, which will fail to back up your tables.</li>
+<li>To include all tables, simply use the database name: <code>databasename</code>.</li>
 </ul>
 </div>
 <p>This option is robust because it correctly registers the specific tables for partial backups, avoiding the conflicts that happen when mixing <code>--databases</code> (for full DBs) and <code>--tables</code> (for partials).</p>
@@ -18159,15 +18157,15 @@ $<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="
 even if they are not explicitly listed by the parameter if they were created
 after the backup started.</p>
 </div>
-<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--databases<span class="o">=</span><span class="s1">&#39;mysql,sys,performance_schema,test&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+<div class="highlight"><pre><span></span><code>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--databases<span class="o">=</span><span class="s1">&#39;mysql,sys,performance_schema,test&#39;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
 </code></pre></div>
 <h2 id="create-partial-backup-the-databases-file-option">The <code>--databases-file</code> option<a class="headerlink" href="#create-partial-backup-the-databases-file-option" title="Permanent link">&para;</a></h2>
 <p>The –databases-file option specifies a file that can contain multiple
 databases and tables in the <code>databasename[.tablename]</code> format, one element name per line in the file. Names are matched exactly, case-sensitive, with no pattern or regular expression matching.</p>
 <ul>
-<li>To back up an entire database, specify just the database name (e.g., <code>mydb</code>).</li>
-<li>To back up a specific table, specify <code>mydb.mytable</code>.</li>
-<li><strong>Do not use</strong> <code>.*</code> or regex (e.g., <code>mydb.*</code>). These are treated as literal names.</li>
+<li>To back up an entire database, specify just the database name (e.g., <code>databasename</code>).</li>
+<li>To back up a specific table, specify <code>databasename.mytable</code>.</li>
+<li><strong>Do not use</strong> <code>.*</code> or regex (e.g., <code>databasename.*</code>). These are treated as literal names.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
