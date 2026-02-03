@@ -5619,6 +5619,17 @@ partial backups:">
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#filtering-behavior-with-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering Behavior with Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-tables-option" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -6975,6 +6986,17 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#filtering-behavior-with-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering Behavior with Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-tables-option" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -7091,15 +7113,86 @@ named <code>test</code> which contains tables named <code>t1</code> and <code>t2
 <p>Use the <code>--tables-file</code> option to list the tables in a file</p>
 </li>
 <li>
-<p>Use the <code>--databases</code> option to list the databases</p>
+<p>Use the <code>--databases</code> option to list the databases or specific tables</p>
 </li>
 <li>
-<p>Use the <code>--databases-file</code> option to list the databases</p>
+<p>Use the <code>--databases-file</code> option to list the databases or specific tables in a file</p>
 </li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Mutual exclusion</p>
-<p>The <code>--tables</code> and <code>--databases</code> options are mutually exclusive. If you use both options in the same command, XtraBackup ignores <code>--databases</code> and only uses <code>--tables</code>. Use only one of these options per backup operation.</p>
+<div class="admonition warning">
+<p class="admonition-title">Conflict between &ndash;tables and &ndash;databases</p>
+<p>The <code>--tables</code> and <code>--databases</code> options use different filtering mechanisms and can conflict when used together.</p>
+<ul>
+<li><code>--tables</code> uses regular expressions and implies a partial backup.</li>
+<li><code>--databases</code> uses exact matching and implies a full backup of the listed databases.</li>
+</ul>
+<p>If you use both, you may get unexpected results (e.g., a database listed in <code>--databases</code> might be fully backed up even if you only wanted specific tables from it via <code>--tables</code>). To combine specific tables from one database with full backups of other databases, use <code>--tables-file</code> instead of <code>--tables</code>.</p>
+</div>
+<h2 id="filtering-behavior-with-examples">Filtering Behavior with Examples<a class="headerlink" href="#filtering-behavior-with-examples" title="Permanent link">&para;</a></h2>
+<p>To understand how filtering works, consider the following environment:</p>
+<ul>
+<li><strong>Database <code>test1</code></strong>: Contains tables <code>Persons1</code>, <code>Persons2</code>, and <code>Truc</code>.</li>
+<li><strong>System Databases</strong>: <code>mysql</code>, <code>performance_schema</code>, <code>sys</code>.</li>
+</ul>
+<p><strong>Goal</strong>: Back up <code>test1.Persons1</code>, <code>test1.Persons2</code>, and all system databases (<code>mysql</code>, <code>performance_schema</code>, <code>sys</code>).</p>
+<h3 id="why-mixing-tables-and-databases-fails">Why mixing &ndash;tables and &ndash;databases fails<a class="headerlink" href="#why-mixing-tables-and-databases-fails" title="Permanent link">&para;</a></h3>
+<p>When determining whether to back up a table, xtrabackup follows this logic:</p>
+<ol>
+<li>
+<p><strong>Database Check</strong>: It first checks if the database is included or excluded.</p>
+<ul>
+<li>If you use <code>--databases</code>, any database <em>not</em> in the list is skipped immediately.</li>
+<li>If a database is in the <code>--databases</code> list, it is marked to have <strong>all its tables included</strong> (unless <code>--tables-file</code> is also used).</li>
+</ul>
+</li>
+<li>
+<p><strong>Table Check</strong>: If the database is not skipped:</p>
+<ul>
+<li>If the database was selected via <code>--databases</code>, <strong>all</strong> tables in it are copied, ignoring any <code>--tables</code> regex.</li>
+<li>If the database was not explicitly selected via <code>--databases</code> (or selected via <code>--tables-file</code>), it then checks the table name against the list.</li>
+</ul>
+</li>
+</ol>
+<p>This explains why mixing <code>--tables</code> (regex) and <code>--databases</code> (list) often fails in the scenario above:</p>
+<ul>
+<li><strong>Case 1</strong>: <code>xtrabackup --backup --tables="test1.Persons1" --databases="mysql"</code><ul>
+<li><code>test1</code> is NOT in <code>--databases</code>, so the database is skipped entirely. Result: No <code>test1</code> tables.</li>
+</ul>
+</li>
+<li><strong>Case 2</strong>: <code>xtrabackup --backup --tables="test1.Persons1" --databases="mysql,test1"</code><ul>
+<li><code>test1</code> IS in <code>--databases</code>. XtraBackup includes <strong>all</strong> tables in <code>test1</code> (<code>Persons1</code>, <code>Persons2</code>, AND <code>Truc</code>), ignoring the <code>--tables</code> regex.</li>
+</ul>
+</li>
+</ul>
+<h3 id="solution-combining-specific-tables-and-whole-databases">Solution: Combining specific tables and whole databases<a class="headerlink" href="#solution-combining-specific-tables-and-whole-databases" title="Permanent link">&para;</a></h3>
+<p>If you want to back up specific tables from one database (e.g., <code>test1.Persons1</code>, <code>test1.Persons2</code>) while also backing up other databases entirely (e.g., <code>mysql</code>, <code>performance_schema</code>, <code>sys</code>), use <code>--tables-file</code> or simply list the tables in <code>--databases</code> (or <code>--databases-file</code>).</p>
+<h4 id="method-1-using-tables-file-recommended">Method 1: Using <code>--tables-file</code> (Recommended)<a class="headerlink" href="#method-1-using-tables-file-recommended" title="Permanent link">&para;</a></h4>
+<ol>
+<li>
+<p>Create a file listing the specific tables you want to back up:</p>
+<div class="highlight"><pre><span></span><code>test1.Persons1
+test1.Persons2
+</code></pre></div>
+</li>
+<li>
+<p>Run xtrabackup using both <code>--tables-file</code> and <code>--databases</code>. You do <strong>not</strong> need to list the database of the specific tables (<code>test1</code>) in the <code>--databases</code> list; <code>--tables-file</code> automatically registers it.</p>
+<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables-file<span class="o">=</span>tables.txt<span class="w"> </span>--databases<span class="o">=</span><span class="s2">&quot;mysql,performance_schema,sys&quot;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+</code></pre></div>
+</li>
+</ol>
+<p>In this configuration, <code>--tables-file</code> ensures the specific tables from <code>test1</code> are backed up, while <code>--databases</code> ensures the system databases are backed up in full.</p>
+<div class="admonition warning">
+<p class="admonition-title">Avoid Duplication</p>
+<p>If you use <code>--tables-file</code> to back up specific tables from a database (e.g., <code>test1</code>), do <strong>not</strong> also list that database (<code>test1</code>) in the <code>--databases</code> option. Doing so will override the partial selection and back up the <strong>entire</strong> database.</p>
+</div>
+<h4 id="method-2-using-databases-for-everything">Method 2: Using <code>--databases</code> for everything<a class="headerlink" href="#method-2-using-databases-for-everything" title="Permanent link">&para;</a></h4>
+<p>You can also list the specific tables directly in the <code>--databases</code> option. This works because <code>--databases</code> supports <code>database.table</code> format.</p>
+<div class="highlight" data-prompt="$"><pre><span></span><code>$<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--databases<span class="o">=</span><span class="s2">&quot;mysql,performance_schema,sys,test1.Persons1,test1.Persons2&quot;</span><span class="w"> </span>--target-dir<span class="o">=</span>/data/backups/
+</code></pre></div>
+<p>This correctly instructs XtraBackup to take full backups of <code>mysql</code>, <code>performance_schema</code>, and <code>sys</code>, but only partial backups of <code>test1</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Do Not Use Wildcards</p>
+<p>Do not add <code>.*</code> to database names (e.g., <code>test1.*</code>). This is not supported and will result in missing tables. Use the database name alone (<code>test1</code>) for full backups.</p>
 </div>
 <h2 id="the-tables-option">The <code>–-tables</code> option<a class="headerlink" href="#the-tables-option" title="Permanent link">&para;</a></h2>
 <p>The first method involves the xtrabackup <code>--tables</code> option. This option accepts either:
@@ -7124,7 +7217,20 @@ regular expression matching. The table names must be fully-qualified in
 $<span class="w"> </span>xtrabackup<span class="w"> </span>--backup<span class="w"> </span>--tables-file<span class="o">=</span>/tmp/tables.txt
 </code></pre></div>
 <h2 id="the-databases-and-databases-file-options">The <code>--databases</code> and <code>-–databases-file</code> options<a class="headerlink" href="#the-databases-and-databases-file-options" title="Permanent link">&para;</a></h2>
-<p>The <code>--databases</code> option accepts a comma-separated list of database names. To include all tables in a database, add <code>.*</code> after the database name (for example, <code>mydb.*</code>). Regular expressions are not supported.</p>
+<p>The <code>--databases</code> option accepts a comma-separated list of database names or table names. </p>
+<ul>
+<li>To back up an entire database, specify just the database name (e.g., <code>mydb</code>).</li>
+<li>To back up specific tables, specify them in <code>database.table</code> format (e.g., <code>mydb.mytable</code>).</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">No Wildcards or Regex</p>
+<p>The <code>--databases</code> option does <strong>not</strong> support wildcards (like <code>*</code>) or regular expressions.</p>
+<ul>
+<li>Do <strong>not</strong> use <code>mydb.*</code>. This will look for a literal table named <code>*</code>, which will fail to back up your tables.</li>
+<li>To include all tables, simply use the database name: <code>mydb</code>.</li>
+</ul>
+</div>
+<p>This option is robust because it correctly registers the specific tables for partial backups, avoiding the conflicts that happen when mixing <code>--databases</code> (for full DBs) and <code>--tables</code> (for partials).</p>
 <p>In addition to your selected databases, make sure to specify the <code>mysql</code>, <code>sys</code>, and <code>performance_schema</code> databases. These databases are required when restoring the databases using xtrabackup <code>--copy-back</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -7137,6 +7243,11 @@ after the backup started.</p>
 <h2 id="the-databases-file-option">The <code>--databases-file</code> option<a class="headerlink" href="#the-databases-file-option" title="Permanent link">&para;</a></h2>
 <p>The –databases-file option specifies a file that can contain multiple
 databases and tables in the <code>databasename[.tablename]</code> format, one element name per line in the file. Names are matched exactly, case-sensitive, with no pattern or regular expression matching.</p>
+<ul>
+<li>To back up an entire database, specify just the database name (e.g., <code>mydb</code>).</li>
+<li>To back up a specific table, specify <code>mydb.mytable</code>.</li>
+<li><strong>Do not use</strong> <code>.*</code> or regex (e.g., <code>mydb.*</code>). These are treated as literal names.</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Tables processed during the –prepare step may also be added to the backup
@@ -7166,7 +7277,7 @@ after the backup started.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="December 1, 2025 08:00:59 UTC">December 1, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 3, 2026 05:50:16 UTC">February 3, 2026</span>
   </span>
 
     
